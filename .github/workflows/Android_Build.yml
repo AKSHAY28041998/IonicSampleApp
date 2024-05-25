@@ -22,7 +22,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '18.13'
+        node-version: '18.18.0'
 
     - name: Cache node modules
       uses: actions/cache@v3
@@ -44,17 +44,17 @@ jobs:
     - name: Build Ionic project
       run: npm run build
 
-    - name: Add Android platform
-      run: npx cap add android
+    # - name: Add Android platform
+    #   run: npx cap add android
 
-    - name: Prepare Android platform
-      run: npx cap sync android
+    # - name: Prepare Android platform
+    #   run: npx cap sync android
 
     - name: Setup JDK
       uses: actions/setup-java@v3
       with:
         distribution: 'adopt'
-        java-version: '11'
+        java-version: '17'
 
     - name: Cache Gradle
       uses: actions/cache@v3

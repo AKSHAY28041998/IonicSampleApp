@@ -19,33 +19,33 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # - name: Set up Node.js
-    #   uses: actions/setup-node@v3
-    #   with:
-    #     node-version: '18.18.0'
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.18.0'
 
-    # - name: Cache node modules
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: ~/.npm
-    #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-node-
+    - name: Cache node modules
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
 
-    # - name: Install dependencies
-    #   run: npm install
+    - name: Install dependencies
+      run: npm install
 
-    # - name: Install Ionic CLI
-    #   run: npm install -g @ionic/cli
+    - name: Install Ionic CLI
+      run: npm install -g @ionic/cli
 
-    # - name: Install Capacitor CLI
-    #   run: npm install @capacitor/core @capacitor/cli
+    - name: Install Capacitor CLI
+      run: npm install @capacitor/core @capacitor/cli
 
-    # - name: Build Ionic project
-    #   run: npm run build
+    - name: Build Ionic project
+      run: npm run build
 
-    # - name: Prepare Android platform
-    #   run: npx cap sync android
+    - name: Prepare Android platform
+      run: npx cap sync android
 
     - name: Create placeholder cordova.variables.gradle
       run: |

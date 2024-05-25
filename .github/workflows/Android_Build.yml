@@ -47,8 +47,13 @@ jobs:
     # - name: Add Android platform
     #   run: npx cap add android
 
-    # - name: Prepare Android platform
-    #   run: npx cap sync android
+    - name: Prepare Android platform
+      run: npx cap sync android
+
+    - name: Create placeholder cordova.variables.gradle
+      run: |
+        mkdir -p android/capacitor-cordova-android-plugins
+        touch android/capacitor-cordova-android-plugins/cordova.variables.gradle
 
     - name: Setup JDK
       uses: actions/setup-java@v3

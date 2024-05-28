@@ -44,8 +44,8 @@ jobs:
     # - name: Build Ionic project
     #   run: npm run build
 
-    - name: Prepare Android platform
-      run: npx cap sync android
+    # - name: Prepare Android platform
+    #   run: npx cap sync android
 
     - name: Create placeholder cordova.variables.gradle
       run: |

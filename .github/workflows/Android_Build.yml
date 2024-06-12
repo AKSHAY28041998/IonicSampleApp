@@ -41,11 +41,11 @@ jobs:
     - name: Install Capacitor CLI
       run: npm install @capacitor/core @capacitor/cli
 
-    # - name: Build Ionic project
-    #   run: npm run build
+    - name: Build Ionic project
+      run: npm run build
 
-    # - name: Prepare Android platform
-    #   run: npx cap sync android
+    - name: Prepare Android platform
+      run: npx cap sync android
 
     - name: Create placeholder cordova.variables.gradle
       run: |

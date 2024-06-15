@@ -3,10 +3,10 @@ name: iOS Build (Simulator)
 on:
   push:
     branches:
-      - main
+      - Sprint2406
   pull_request:
     branches:
-      - main
+      - Sprint2406
 
 jobs:
   build:

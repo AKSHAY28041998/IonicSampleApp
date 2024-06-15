@@ -1,98 +1,63 @@
-name: Build iOS
+name: iOS Build (Simulator)
 
 on:
   push:
     branches:
-      - Sprint2406
+      - main
   pull_request:
     branches:
-      - Sprint2406
+      - main
 
 jobs:
   build:
     runs-on: macos-latest
 
-    env:
-      CI: true
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18.18.0'
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.18.0'  # Specify the Node.js version you need
 
-    - name: Cache node modules
-      uses: actions/cache@v3
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+      - name: Install Node.js dependencies
+        run: npm install
+        working-directory:  ios # Adjust this to the directory containing your package.json
 
-    - name: Install dependencies
-      run: npm install
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
 
-    - name: Install Ionic CLI
-      run: npm install -g @ionic/cli
+      - name: Create Gemfile if not present
+        run: |
+          if [ ! -f Gemfile ]; then
+            echo "source 'https://rubygems.org'" > Gemfile
+            echo "gem 'cocoapods'" >> Gemfile
+            echo "gem 'fastlane'" >> Gemfile
+          fi
 
-    - name: Install Capacitor CLI
-      run: npm install @capacitor/core @capacitor/cli
+      - name: Install Bundler
+        run: gem install bundler
 
-    - name: Build Ionic project
-      run: npm run build
+      - name: Install dependencies from Gemfile
+        run: gem install bundler -v 2.4.22
 
-    - name: Prepare iOS platform
-      run: npx cap sync ios
+      - name: Install CocoaPods dependencies
+        run: bundle exec pod install --repo-update
+        working-directory: ios  # Adjust if your Podfile is in a different directory
 
-    - name: Install CocoaPods
-      run: sudo gem install cocoapods
+      - name: List Xcode versions
+        run: ls /Applications/ | grep Xcode
 
-    - name: Install iOS dependencies
-      run: |
-        cd ios/App
-        pod install
+      - name: Select Xcode version
+        run: sudo xcode-select -s /Applications/Xcode_14.3.app  # Adjust this to a valid version
 
-    - name: Create Gemfile if not present
-      run: |
-        if [ ! -f Gemfile ]; then
-          echo "source 'https://rubygems.org'" > Gemfile
-          echo "gem 'cocoapods'" >> Gemfile
-          echo "gem 'fastlane'" >> Gemfile
-        fi
+      - name: Build the app for iOS simulator
+        run: xcodebuild -workspace ios/App.xcworkspace -scheme App -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.4' build
+        working-directory: ios
 
-    - name: Install Bundler
-      run:  gem install bundler -v 2.4.22
-
-    - name: Install dependencies from Gemfile
-      run: bundle install
-
-    - name: Install CocoaPods dependencies
-      run: bundle exec pod install --repo-update
-      working-directory: ios/App # Adjust if your Podfile is in a different directory
-
-    - name: List Xcode versions
-      run: ls /Applications/ | grep Xcode
-
-    - name: Select Xcode version
-      run: sudo xcode-select -s /Applications/Xcode_14.3.app  # Adjust this to a valid version
-
-    - name: Decrypt and install provisioning profile
-      run: |
-        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-        echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/App.mobileprovision
-
-    - name: Decrypt and install certificate
-      run: |
-        echo "${{ secrets.DEVELOPMENT_CERTIFICATE }}" | base64 --decode > certificate.p12
-        security create-keychain -p "" build.keychain
-        security import certificate.p12 -t agg -k ~/Library/Keychains/build.keychain -P "${{ secrets.CERTIFICATE_PASSWORD }}" -A
-        security list-keychains -s ~/Library/Keychains/build.keychain
-        security unlock-keychain -p "" ~/Library/Keychains/build.keychain
-        security set-keychain-settings -t 3600 -u ~/Library/Keychains/build.keychain
-
-    - name: Build the app
-      run: xcodebuild -workspace ios/App.xcworkspace -scheme App -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.4' build
-      working-directory: ios
+      - name: Run tests on iOS simulator
+        run: xcodebuild -workspace ios/App.xcworkspace -scheme App -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.4' test
+        working-directory: ios

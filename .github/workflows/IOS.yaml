@@ -55,7 +55,7 @@ jobs:
         run: sudo xcode-select -s /Applications/Xcode_14.3.app  # Adjust this to a valid version
 
       - name: Build the app for iOS simulator
-        run: xcodebuild -workspace ios/App.xcworkspace -scheme App -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.4' build
+        run: xcodebuild -workspace ios/App/App.xcworkspace -scheme App -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.4' build
         working-directory: ios/App
 
       # - name: Run tests on iOS simulator

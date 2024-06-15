@@ -21,21 +21,27 @@ jobs:
         with:
           ruby-version: '2.7'
 
+      - name: Create Gemfile if not present
+        run: |
+          if [ ! -f Gemfile ]; then
+            echo "source 'https://rubygems.org'" > Gemfile
+            echo "gem 'cocoapods'" >> Gemfile
+            echo "gem 'fastlane'" >> Gemfile
+          fi
+
       - name: Install Bundler
         run:  gem install bundler -v 2.4.22
 
-      - name: Install dependencies
+      - name: Install dependencies from Gemfile
         run: bundle install
 
-      - name: Install CocoaPods
+      - name: Install CocoaPods dependencies
         run: bundle exec pod install --repo-update
-        working-directory: ios
+        working-directory: ios  # Adjust if your Podfile is in a different directory
 
-      # List the installed Xcode versions to check which ones are available
       - name: List Xcode versions
         run: ls /Applications/ | grep Xcode
 
-      # Optionally, set up the Xcode version from the list of available versions
       - name: Select Xcode version
         run: sudo xcode-select -s /Applications/Xcode_14.3.app  # Adjust this to a valid version
 
@@ -56,11 +62,3 @@ jobs:
       - name: Build the app
         run: xcodebuild -workspace ios/App.xcworkspace -scheme App -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.4' build
         working-directory: ios
-
-      - name: Upload IPA
-        uses: actions/upload-artifact@v3
-        with:
-          name: app-release.ipa
-          path: ios/App/build/App.ipa
-
-        #End of build

@@ -46,7 +46,7 @@ jobs:
 
       - name: Install CocoaPods dependencies
         run: bundle exec pod install --repo-update
-        working-directory: ios  # Adjust if your Podfile is in a different directory
+        working-directory: ios/App  # Adjust if your Podfile is in a different directory
 
       - name: List Xcode versions
         run: ls /Applications/ | grep Xcode

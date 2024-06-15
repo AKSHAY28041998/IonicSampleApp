@@ -39,10 +39,10 @@ jobs:
           fi
 
       - name: Install Bundler
-        run: gem install bundler
+        run: em install bundler -v 2.4.22
 
       - name: Install dependencies from Gemfile
-        run: gem install bundler -v 2.4.22
+        run: bundle install
 
       - name: Install CocoaPods dependencies
         run: bundle exec pod install --repo-update

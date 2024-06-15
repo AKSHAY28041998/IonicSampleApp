@@ -1,73 +1,65 @@
-name: Build iOS
+name: iOS Build
 
 on:
   push:
     branches:
-      - Sprint2406
+      - main
   pull_request:
     branches:
-      - Sprint2406
+      - main
 
 jobs:
   build:
     runs-on: macos-latest
 
-    env:
-      CI: true
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18.18.0'
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
 
-    - name: Cache node modules
-      uses: actions/cache@v3
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+      - name: Install Bundler
+        run: gem install bundler
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: bundle install
 
-    - name: Install Ionic CLI
-      run: npm install -g @ionic/cli
+      - name: Install CocoaPods
+        run: bundle exec pod install --repo-update
+        working-directory: ios
 
-    - name: Install Capacitor CLI
-      run: npm install @capacitor/core @capacitor/cli
+      - name: Set up Xcode
+        run: sudo xcode-select -s /Applications/Xcode_12.4.app  # Adjust Xcode version as needed
 
-    - name: Build Ionic project
-      run: npm run build
+      - name: Decrypt and install provisioning profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.PROVISIONING_PROFILE }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/App.mobileprovision
 
-    - name: Prepare iOS platform
-      run: npx cap sync ios
+      - name: Decrypt and install certificate
+        run: |
+          echo "${{ secrets.DEVELOPMENT_CERTIFICATE }}" | base64 --decode > certificate.p12
+          security create-keychain -p "" build.keychain
+          security import certificate.p12 -t agg -k ~/Library/Keychains/build.keychain -P "${{ secrets.CERTIFICATE_PASSWORD }}" -A
+          security list-keychains -s ~/Library/Keychains/build.keychain
+          security unlock-keychain -p "" ~/Library/Keychains/build.keychain
+          security set-keychain-settings -t 3600 -u ~/Library/Keychains/build.keychain
 
-    - name: Install CocoaPods
-      run: sudo gem install cocoapods
+      - name: Build the app
+        run: xcodebuild -workspace ios/App.xcworkspace -scheme App -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 12,OS=14.4' build
+        working-directory: ios
 
-    - name: Install iOS dependencies
-      run: |
-        cd ios/App
-        pod install
+      # - name: Run tests
+      #   run: xcodebuild -workspace ios/App.xcworkspace -scheme App -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 12,OS=14.4' test
+      #   working-directory: ios
 
-    - name: Build iOS app
-      run: |
-        cd ios/App
-        xcodebuild -workspace App.xcworkspace -scheme App -sdk iphoneos -configuration Release archive -archivePath $PWD/build/App.xcarchive
-
-    - name: Export iOS app
-      run: |
-        xcodebuild -exportArchive -archivePath ios/App/build/App.xcarchive -exportOptionsPlist ios/App/exportOptions.plist -exportPath ios/App/build
-
-    - name: Upload IPA
-      uses: actions/upload-artifact@v3
-      with:
-        name: app-release.ipa
-        path: ios/App/build/App.ipa
+      - name: Upload IPA
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release.ipa
+          path: ios/App/build/App.ipa
 
         #End of build

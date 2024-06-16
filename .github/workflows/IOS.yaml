@@ -106,7 +106,7 @@ jobs:
                      -sdk iphonesimulator \
                      -destination 'platform=iOS Simulator,name=iPhone 15 Pro Max,OS=18.0' \
                       build -configuration Release \
-                      build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+                      build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED=NO
 
       - name: Archive the app
         run: |
@@ -115,7 +115,8 @@ jobs:
                       -destination 'generic/platform=iOS' \
                       -configuration debugging \
                       archive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
-                      -archivePath build/App.xcarchive
+                      -archivePath build/App.xcarchive \
+                      CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED=NO
 
       - name: Export IPA
         run: |
@@ -123,7 +124,7 @@ jobs:
                    -archivePath build/App.xcarchive \
                    -exportOptionsPlist ios/App/App.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist \
                    -exportPath ios/App/out \
-                   CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+                   CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED=NO
 
       - name: Upload IPA
         uses: actions/upload-artifact@v3

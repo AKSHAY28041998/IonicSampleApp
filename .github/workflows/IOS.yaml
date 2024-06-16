@@ -114,7 +114,6 @@ jobs:
                       -scheme App \
                       -destination 'generic/platform=iOS' \
                       -configuration Release \
-                      -exportFormat ipa \
                       archive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED=NO \
                       -archivePath ios/App/out/App.ipa
 

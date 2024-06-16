@@ -107,10 +107,23 @@ jobs:
                      -destination 'platform=iOS Simulator,name=iPhone 15 Pro Max,OS=18.0' \
                      build
 
-      # - name: Post Build Script Phase
-      #   run: |
-      #     # Check for any issues related to 'Embed Pods Frameworks' phase
-      #     xcodebuild -workspace ios/App/App.xcworkspace -scheme App -sdk iphonesimulator -showBuildSettings | grep "SCRIPT_INPUT_FILE"
+      - name: Package IPA file
+        run: |
+          mkdir -p build
+          xcodebuild -workspace ios/App/App.xcworkspace \
+                    -scheme App \
+                    -sdk iphoneos \
+                    -configuration Release \
+                    -archivePath build/App.xcarchive \
+                    archive
+          xcodebuild -exportArchive \
+                    -archivePath build/App.xcarchive \
+                    -exportPath build \
+                    -exportOptionsPlist ExportOptions.plist
 
-      #     # Handle the 'Embed Pods Frameworks' phase if necessary
+      - name: Upload IPA file
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-ipa
+          path: build/App.ipa
 

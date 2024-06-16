@@ -114,16 +114,17 @@ jobs:
                       -scheme App \
                       -destination 'generic/platform=iOS' \
                       -configuration Release \
+                      -exportFormat ipa \
                       archive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED=NO \
-                      -archivePath build/App.xcarchive
+                      -archivePath ios/App/out/App.ipa
 
-      - name: Export IPA
-        run: |
-         xcodebuild -exportArchive \
-                   -archivePath build/App.xcarchive \
-                   -exportOptionsPlist ios/App/App.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist \
-                   -exportPath build \
-                   CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED=NO
+      # - name: Export IPA
+      #   run: |
+      #    xcodebuild -exportArchive \
+      #              -archivePath build/App.xcarchive \
+      #              -exportOptionsPlist ios/App/App.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist \
+      #              -exportPath build \
+      #              CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED=NO
 
       - name: Upload IPA
         uses: actions/upload-artifact@v3

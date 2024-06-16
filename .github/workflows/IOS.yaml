@@ -119,7 +119,7 @@ jobs:
 
       - name: List files in ios/App/out/App
         run: |
-          ls -R ios/App/out/App
+          ls -R ios/App/out/
 
       # - name: Export IPA
       #   run: |

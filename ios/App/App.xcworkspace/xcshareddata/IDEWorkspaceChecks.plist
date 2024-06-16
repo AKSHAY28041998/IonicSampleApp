@@ -4,6 +4,6 @@
 	<dict>
 		<!-- <key>IDEDidComputeMac32BitWarning</key> -->
 		<key>method</key>
-		<string>debugging</string>
+		<string>development</string>
 	</dict>
 </plist>

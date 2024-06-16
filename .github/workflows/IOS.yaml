@@ -110,15 +110,15 @@ jobs:
 
       - name: Archive the app
         run: |
-          xcodebuild -workspace ios/App/App.xcworkspace \
-                      -scheme App \
-                      -destination 'generic/platform=iOS' \
-                      -configuration Release \
-                      archive CODE_SIGN_IDENTITY="" \
-                      CODE_SIGNING_REQUIRED=NO \
-                      CODE_SIGN_ENTITLEMENTS="" \
-                      CODE_SIGNING_ALLOWED=NO \
-                      -archivePath ios/App/out/App.xcarchive
+          xcodebuild archive \
+           -workspace ios/App/App.xcworkspace \
+           -scheme App \
+           -archivePath ios/App/out/App.xcarchive \
+           CODE_SIGN_IDENTITY="" \
+           CODE_SIGNING_REQUIRED=NO \
+           CODE_SIGN_ENTITLEMENTS="" \
+           CODE_SIGNING_ALLOWED=NO
+
 
       - name: Export IPA from Archive
         run: |

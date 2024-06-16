@@ -153,25 +153,45 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.0 # Specify the Ruby version you need
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.0 # Adjust based on your project's requirements
 
-      - name: Install dependencies
-        run: npm install
+    - name: Install Fastlane
+      run: gem install fastlane -NV
 
-      - name: Install Fastlane
-        run: gem install fastlane -NV
+    - name: Initialize Fastlane if not present
+      run: |
+        mkdir -p ios/App/fastlane
+        if [ ! -f ios/App/fastlane/Fastfile ]; then
+          cd ios/App
+          fastlane init --non-interactive
+          cd ../..
+          echo "default_platform(:ios)" > ios/App/fastlane/Fastfile
+          echo "platform :ios do" >> ios/App/fastlane/Fastfile
+          echo "  desc 'Build and export .ipa file'" >> ios/App/fastlane/Fastfile
+          echo "  lane :build do" >> ios/App/fastlane/Fastfile
+          echo "    gym(" >> ios/App/fastlane/Fastfile
+          echo "      workspace: 'App.xcworkspace'," >> ios/App/fastlane/Fastfile
+          echo "      scheme: 'App'," >> ios/App/fastlane/Fastfile
+          echo "      export_options: {" >> ios/App/fastlane/Fastfile
+          echo "        method: 'development'" >> ios/App/fastlane/Fastfile
+          echo "      }" >> ios/App/fastlane/Fastfile
+          echo "    )" >> ios/App/fastlane/Fastfile
+          echo "  end" >> ios/App/fastlane/Fastfile
+          echo "end" >> ios/App/fastlane/Fastfile
+        fi
 
-      - name: Build and export .ipa
-        run: fastlane ios build
+    - name: Build and export .ipa
+      run: fastlane ios build
+      working-directory: ios/App
 
-      - name: Upload .ipa to GitHub Actions artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: App.ipa
-          path: ios/App/out/*.ipa
+    - name: Upload .ipa to GitHub Actions artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: App.ipa
+        path: ios/App/fastlane/output/*.ipa

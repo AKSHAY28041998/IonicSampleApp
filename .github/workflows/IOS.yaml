@@ -1,4 +1,67 @@
-# name: iOS Build (Simulator)
+# # name: iOS Build (Simulator)
+
+# # on:
+# #   push:
+# #     branches:
+# #       - Sprint2406
+# #   pull_request:
+# #     branches:
+# #       - Sprint2406
+
+# # jobs:
+# #   build:
+# #     runs-on: macos-latest
+
+# #     steps:
+# #       - name: Checkout repository
+# #         uses: actions/checkout@v2
+
+# #       - name: Set up Node.js
+# #         uses: actions/setup-node@v2
+# #         with:
+# #           node-version: '18.18.0'  # Specify the Node.js version you need
+
+# #       - name: Install Node.js dependencies
+# #         run: npm install
+# #         working-directory:  ios # Adjust this to the directory containing your package.json
+
+# #       - name: Set up Ruby
+# #         uses: ruby/setup-ruby@v1
+# #         with:
+# #           ruby-version: '2.7'
+
+# #       - name: Create Gemfile if not present
+# #         run: |
+# #           if [ ! -f Gemfile ]; then
+# #             echo "source 'https://rubygems.org'" > Gemfile
+# #             echo "gem 'cocoapods'" >> Gemfile
+# #             echo "gem 'fastlane'" >> Gemfile
+# #           fi
+
+# #       - name: Install Bundler
+# #         run: gem install bundler -v 2.4.22
+
+# #       - name: Install dependencies from Gemfile
+# #         run: bundle install
+
+# #       - name: Install CocoaPods dependencies
+# #         run: bundle exec pod install --repo-update
+# #         working-directory: ios/App  # Adjust if your Podfile is in a different directory
+
+# #       - name: List Xcode versions
+# #         run: ls /Applications/ | grep Xcode
+
+# #       - name: Select Xcode version
+# #         run: sudo xcode-select -s /Applications/Xcode_14.3.app  # Adjust this to a valid version
+
+# #       - name: Build the app for iOS simulator
+# #         run: xcodebuild -workspace ios/App/App.xcworkspace -scheme App -sdk iphonesimulator -destination 'platform=iOS Simulator,id=24B7472F-F085-4498-970C-A941CC9FCF80' build
+
+# #       # - name: Run tests on iOS simulator
+# #       #   run: xcodebuild -workspace ios/App.xcworkspace -scheme App -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.4' test
+# #       #   working-directory: ios
+
+# name: Build iOS App
 
 # on:
 #   push:
@@ -13,53 +76,67 @@
 #     runs-on: macos-latest
 
 #     steps:
-#       - name: Checkout repository
+#       - name: Checkout code
 #         uses: actions/checkout@v2
 
 #       - name: Set up Node.js
 #         uses: actions/setup-node@v2
 #         with:
-#           node-version: '18.18.0'  # Specify the Node.js version you need
+#           node-version: '18.18.0'
 
-#       - name: Install Node.js dependencies
+#       - name: Install dependencies
 #         run: npm install
-#         working-directory:  ios # Adjust this to the directory containing your package.json
 
-#       - name: Set up Ruby
-#         uses: ruby/setup-ruby@v1
-#         with:
-#           ruby-version: '2.7'
+#       - name: Update Capacitor
+#         run: npx cap update ios
 
-#       - name: Create Gemfile if not present
+#       - name: Install CocoaPods
 #         run: |
-#           if [ ! -f Gemfile ]; then
-#             echo "source 'https://rubygems.org'" > Gemfile
-#             echo "gem 'cocoapods'" >> Gemfile
-#             echo "gem 'fastlane'" >> Gemfile
-#           fi
+#           cd ios/App
+#           pod install
+#           cd ../..
 
-#       - name: Install Bundler
-#         run: gem install bundler -v 2.4.22
+#       - name: Set Xcode version
+#         run: sudo xcode-select -s /Applications/Xcode_16.0.app 
 
-#       - name: Install dependencies from Gemfile
-#         run: bundle install
+#       - name: Build iOS app
+#         run: |
+#           xcodebuild -workspace ios/App/App.xcworkspace \
+#                      -scheme App \
+#                      -sdk iphonesimulator \
+#                      -destination 'platform=iOS Simulator,name=iPhone 15 Pro Max,OS=18.0' \
+#                       build -configuration Release \
+#                       build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED=NO
 
-#       - name: Install CocoaPods dependencies
-#         run: bundle exec pod install --repo-update
-#         working-directory: ios/App  # Adjust if your Podfile is in a different directory
+#       - name: Archive the app
+#         run: |
+#           xcodebuild archive \
+#            -workspace ios/App/App.xcworkspace \
+#            -scheme App \
+#            -archivePath ios/App/out/App.xcarchive \
+#            CODE_SIGN_IDENTITY="" \
+#            CODE_SIGNING_REQUIRED=NO \
+#            CODE_SIGN_ENTITLEMENTS="" \
+#            CODE_SIGNING_ALLOWED=NO
 
-#       - name: List Xcode versions
-#         run: ls /Applications/ | grep Xcode
 
-#       - name: Select Xcode version
-#         run: sudo xcode-select -s /Applications/Xcode_14.3.app  # Adjust this to a valid version
 
-#       - name: Build the app for iOS simulator
-#         run: xcodebuild -workspace ios/App/App.xcworkspace -scheme App -sdk iphonesimulator -destination 'platform=iOS Simulator,id=24B7472F-F085-4498-970C-A941CC9FCF80' build
+#       - name: Export IPA from Archive
+#         run: |
+#           xcodebuild -exportArchive \
+#                     -archivePath ios/App/out/App.xcarchive \
+#                     -exportPath ios/App/out \
+#                     -exportOptionsPlist ios/App/App.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist \
+#                     CODE_SIGN_IDENTITY="" \
+#                     CODE_SIGNING_REQUIRED=NO \
+#                     CODE_SIGN_ENTITLEMENTS="" \
+#                     CODE_SIGNING_ALLOWED=NO
 
-#       # - name: Run tests on iOS simulator
-#       #   run: xcodebuild -workspace ios/App.xcworkspace -scheme App -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.4' test
-#       #   working-directory: ios
+#       - name: Upload IPA
+#         uses: actions/upload-artifact@v3
+#         with:
+#          name: app-release.ipa
+#          path: ios/App/out/*.ipa
 
 name: Build iOS App
 
@@ -76,64 +153,27 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
         with:
-          node-version: '18.18.0'
+          ruby-version: 3.0 # Specify the Ruby version you need
 
       - name: Install dependencies
-        run: npm install
-
-      - name: Update Capacitor
-        run: npx cap update ios
-
-      - name: Install CocoaPods
         run: |
-          cd ios/App
-          pod install
-          cd ../..
+          gem install bundler
+          bundle install
 
-      - name: Set Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_16.0.app 
+      - name: Install Fastlane
+        run: gem install fastlane -NV
 
-      - name: Build iOS app
-        run: |
-          xcodebuild -workspace ios/App/App.xcworkspace \
-                     -scheme App \
-                     -sdk iphonesimulator \
-                     -destination 'platform=iOS Simulator,name=iPhone 15 Pro Max,OS=18.0' \
-                      build -configuration Release \
-                      build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED=NO
+      - name: Build and export .ipa
+        run: fastlane ios build
 
-      - name: Archive the app
-        run: |
-          xcodebuild archive \
-           -workspace ios/App/App.xcworkspace \
-           -scheme App \
-           -archivePath ios/App/out/App.xcarchive \
-           CODE_SIGN_IDENTITY="" \
-           CODE_SIGNING_REQUIRED=NO \
-           CODE_SIGN_ENTITLEMENTS="" \
-           CODE_SIGNING_ALLOWED=NO
-
-
-
-      - name: Export IPA from Archive
-        run: |
-          xcodebuild -exportArchive \
-                    -archivePath ios/App/out/App.xcarchive \
-                    -exportPath ios/App/out \
-                    -exportOptionsPlist ios/App/App.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist \
-                    CODE_SIGN_IDENTITY="" \
-                    CODE_SIGNING_REQUIRED=NO \
-                    CODE_SIGN_ENTITLEMENTS="" \
-                    CODE_SIGNING_ALLOWED=NO
-
-      - name: Upload IPA
+      - name: Upload .ipa to GitHub Actions artifacts
         uses: actions/upload-artifact@v3
         with:
-         name: app-release.ipa
-         path: ios/App/out/*.ipa
+          name: App.ipa
+          path: ios/App/out/*.ipa

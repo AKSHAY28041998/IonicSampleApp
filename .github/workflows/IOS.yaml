@@ -113,7 +113,7 @@ jobs:
           xcodebuild -workspace ios/App/App.xcworkspace \
                       -scheme App \
                       -destination 'generic/platform=iOS' \
-                      -configuration Release \
+                      -configuration debugging \
                       archive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO \
                       -archivePath build/App.xcarchive
 

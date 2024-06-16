@@ -18,7 +18,7 @@ jobs:
 
     - name: Install Xcode
       run: |
-        sudo xcode-select --switch /Applications/Xcode_13.app  
+        sudo xcode-select --switch /Applications/Xcode_16.0.app 
         sudo xcodebuild -runFirstLaunch
 
     - name: Install Cocoapods (if needed)

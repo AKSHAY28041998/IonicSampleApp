@@ -21,10 +21,10 @@ jobs:
         sudo xcode-select --switch /Applications/Xcode_16.0.app 
         sudo xcodebuild -runFirstLaunch
 
-    - name: Install Cocoapods (if needed)
-      run: |
-        gem install cocoapods
-        pod install --project-directory=ios/App  
+    # - name: Install Cocoapods (if needed)
+    #   run: |
+    #     gem install cocoapods
+    #     pod install --project-directory=ios/App  
 
     - name: Build iOS app
       run: |

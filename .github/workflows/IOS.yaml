@@ -114,21 +114,22 @@ jobs:
                       -scheme App \
                       -destination 'generic/platform=iOS' \
                       -configuration Release \
-                      archive CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED=NO \
-                      -archivePath ios/App/out/App.ipa
+                      archive CODE_SIGN_IDENTITY="" \
+                      CODE_SIGNING_REQUIRED=NO \
+                      CODE_SIGN_ENTITLEMENTS="" \
+                      CODE_SIGNING_ALLOWED=NO \
+                      -archivePath ios/App/out/App.xcarchive
 
-      - name: Display IPA Path
+      - name: Export IPA from Archive
         run: |
-          echo "Path to IPA file:"
-          ls -l ios/App/out/*.ipa
-
-      # - name: Export IPA
-      #   run: |
-      #    xcodebuild -exportArchive \
-      #              -archivePath build/App.xcarchive \
-      #              -exportOptionsPlist ios/App/App.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist \
-      #              -exportPath build \
-      #              CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED=NO
+          xcodebuild -exportArchive \
+                    -archivePath ios/App/out/App.xcarchive \
+                    -exportPath ios/App/out \
+                    -exportOptionsPlist ios/App/App.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist \
+                    CODE_SIGN_IDENTITY="" \
+                    CODE_SIGNING_REQUIRED=NO \
+                    CODE_SIGN_ENTITLEMENTS="" \
+                    CODE_SIGNING_ALLOWED=NO
 
       - name: Upload IPA
         uses: actions/upload-artifact@v3

@@ -52,11 +52,10 @@ jobs:
         run: ls /Applications/ | grep Xcode
 
       - name: Select Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_16.0.app  # Adjust this to a valid version
+        run: sudo xcode-select -s /Applications/Xcode_14.3.app  # Adjust this to a valid version
 
       - name: Build the app for iOS simulator
-        run: xcodebuild -workspace ios/App/App.xcworkspace -scheme App -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.4' build
-        # working-directory: ios/App
+        run: xcodebuild -workspace ios/App/App.xcworkspace -scheme App -sdk iphonesimulator -destination 'platform=iOS Simulator,id=24B7472F-F085-4498-970C-A941CC9FCF80' build
 
       # - name: Run tests on iOS simulator
       #   run: xcodebuild -workspace ios/App.xcworkspace -scheme App -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.4' test

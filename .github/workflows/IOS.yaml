@@ -109,11 +109,15 @@ jobs:
 
       - name: Export iOS app
         run: |
-         xcodebuild -exportArchive -archivePath ios/App/build/App.xcarchive -exportOptionsPlist ios/App/exportOptions.plist -exportPath ios/App/build
+         xcodebuild -project ios/App/App.xcodeproj -scheme App -archivePath ios/App/App.xcarchive archive 
+
+      - name: Create IPA file
+        run: |
+         xcodebuild -exportArchive -archivePath ios/App/App.xcarchive -exportPath ios/App/out/App.xcarchive -exportOptionsPlist ios/App/export.plist         
 
       - name: Upload IPA
         uses: actions/upload-artifact@v3
         with:
           name: app-release.ipa
-          path: ios/App/build/App.ipa
+          path: ios/App/out/App.ipa
 

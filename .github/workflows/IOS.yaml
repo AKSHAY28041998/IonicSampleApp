@@ -121,7 +121,7 @@ jobs:
         run: |
          xcodebuild -exportArchive \
                    -archivePath build/App.xcarchive \
-                   -exportOptionsPlist ios/App/out/exportOptions.plist \
+                   -exportOptionsPlist ios/App/App.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist \
                    -exportPath build \
                    CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
 

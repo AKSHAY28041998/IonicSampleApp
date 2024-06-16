@@ -29,10 +29,19 @@ jobs:
     - name: Build iOS app
       run: |
         xcodebuild -workspace ios/App/App.xcworkspace \
-                   -scheme App \
-                   -destination 'generic/platform=iOS' \
-                   -configuration Release \
-                   build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+                  -scheme App \
+                  -sdk iphonesimulator \
+                  -destination 'platform=iOS Simulator,name=iPhone 15 Pro Max,OS=18.0' \
+                  -configuration Release \
+                  build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+
+    # - name: Build iOS app
+    #   run: |
+    #     xcodebuild -workspace ios/App/App.xcworkspace \
+    #                -scheme App \
+    #                -destination 'generic/platform=iOS' \
+    #                -configuration Release \
+    #                build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
 
     - name: Archive the app
       run: |

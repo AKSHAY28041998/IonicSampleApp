@@ -107,23 +107,13 @@ jobs:
                      -destination 'platform=iOS Simulator,name=iPhone 15 Pro Max,OS=18.0' \
                      build
 
-      - name: Package IPA file
+      - name: Export iOS app
         run: |
-          mkdir -p build
-          xcodebuild -workspace ios/App/App.xcworkspace \
-                    -scheme App \
-                    -sdk iphoneos \
-                    -configuration Release \
-                    -archivePath build/App.xcarchive \
-                    archive
-          xcodebuild -exportArchive \
-                    -archivePath build/App.xcarchive \
-                    -exportPath build \
-                    -exportOptionsPlist ExportOptions.plist
+         xcodebuild -exportArchive -archivePath ios/App/build/App.xcarchive -exportOptionsPlist ios/App/exportOptions.plist -exportPath ios/App/build
 
-      - name: Upload IPA file
-        uses: actions/upload-artifact@v2
+      - name: Upload IPA
+        uses: actions/upload-artifact@v3
         with:
-          name: app-ipa
-          path: build/App.ipa
+          name: app-release.ipa
+          path: ios/App/build/App.ipa
 

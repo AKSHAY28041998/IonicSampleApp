@@ -171,6 +171,7 @@ jobs:
           cd ios/App
           fastlane init --non-interactive
           cd ../..
+          echo "opt_out_usage" > ios/App/fastlane/Fastfile
           echo "default_platform(:ios)" > ios/App/fastlane/Fastfile
           echo "platform :ios do" >> ios/App/fastlane/Fastfile
           echo "  desc 'Build and export .ipa file'" >> ios/App/fastlane/Fastfile

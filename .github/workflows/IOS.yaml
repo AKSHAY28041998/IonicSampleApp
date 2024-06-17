@@ -169,7 +169,6 @@ jobs:
         mkdir -p ios/App/fastlane
         if [ ! -f ios/App/fastlane/Fastfile ]; then
           cd ios/App
-          fastlane init --non-interactive
           cd ../..
           echo "opt_out_usage" > ios/App/fastlane/Fastfile
           echo "default_platform(:ios)" > ios/App/fastlane/Fastfile

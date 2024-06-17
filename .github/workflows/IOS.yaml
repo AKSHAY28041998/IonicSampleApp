@@ -176,7 +176,7 @@ jobs:
           echo "  desc 'Build and export .ipa file'" >> ios/App/fastlane/Fastfile
           echo "  lane :build do" >> ios/App/fastlane/Fastfile
           echo "    gym(" >> ios/App/fastlane/Fastfile
-          echo "      workspace: 'ios/App/App.xcworkspace'," >> ios/App/fastlane/Fastfile
+          echo "      workspace: 'App.xcworkspace'," >> ios/App/fastlane/Fastfile
           echo "      scheme: 'App'," >> ios/App/fastlane/Fastfile
           echo "      export_options: {" >> ios/App/fastlane/Fastfile
           echo "        method: 'development'" >> ios/App/fastlane/Fastfile

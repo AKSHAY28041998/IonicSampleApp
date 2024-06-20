@@ -162,7 +162,7 @@ jobs:
           ruby-version: '2.7' # Specify the Ruby version you are using
 
       - name: Install Bundler
-        run: gem install bundler
+        run: gem install bundler -v 2.4.22
 
       - name: Create Fastfile
         run: |

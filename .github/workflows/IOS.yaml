@@ -190,9 +190,6 @@ jobs:
       - name: Bundle Install
         run: bundle install
 
-      - name: Install CocoaPods
-        run: bundle exec pod install
-
       - name: Run Fastlane
         run: bundle exec fastlane build
 

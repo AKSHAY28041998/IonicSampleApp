@@ -136,60 +136,60 @@
 #          name: app-release.ipa
 #          path: ios/App/out/*.ipa
 
-name: Build iOS App
+# .github/workflows/ios-build.yml
+
+name: iOS Build
 
 on:
   push:
     branches:
-      - Sprint2406
-  pull_request:
-    branches:
-      - Sprint2406
+      - main
 
 jobs:
   build:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0 # Adjust based on your project's requirements
+          ruby-version: '2.7' # Specify the Ruby version you are using
 
-      - name: Install Fastlane
-        run: gem install fastlane -NV
+      - name: Install Bundler
+        run: gem install bundler
 
-      - name: Initialize Fastlane if not present
+      - name: Create Fastfile
         run: |
-          mkdir -p ios/App/fastlane
-          if [ ! -f ios/App/fastlane/Fastfile ]; then
-            cd ios/App
-            cd ../..
-            echo "opt_out_usage" > ios/App/fastlane/Fastfile
-            echo "default_platform(:ios)" > ios/App/fastlane/Fastfile
-            echo "platform :ios do" >> ios/App/fastlane/Fastfile
-            echo "  desc 'Build and export .ipa file'" >> ios/App/fastlane/Fastfile
-            echo "  lane :build do" >> ios/App/fastlane/Fastfile
-            echo "    gym(" >> ios/App/fastlane/Fastfile
-            echo "      scheme: 'App'," >> ios/App/fastlane/Fastfile
-            echo "      workspace: 'App.xcworkspace'," >> ios/App/fastlane/Fastfile
-            echo "      export_options: {" >> ios/App/fastlane/Fastfile
-            echo "        method: 'development'" >> ios/App/fastlane/Fastfile
-            echo "      }" >> ios/App/fastlane/Fastfile
-            echo "    )" >> ios/App/fastlane/Fastfile
-            echo "  end" >> ios/App/fastlane/Fastfile
-            echo "end" >> ios/App/fastlane/Fastfile
-          fi
+          mkdir -p fastlane
+          echo 'default_platform(:ios)
 
-      - name: Build and export .ipa
-        run: fastlane ios build
-        working-directory: ios/App
+          platform :ios do
+            desc "Build the iOS app"
+            lane :build do
+              gym(
+                workspace: "App.xcworkspace", 
+                scheme: "App",           
+                configuration: "Release"           
+              )
+            end
+          end' > fastlane/Fastfile
 
-      - name: Upload .ipa to GitHub Actions artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: App.ipa
-          path: ios/App/fastlane/output/*.ipa
+      - name: Create Gemfile
+        run: |
+          echo 'source "https://rubygems.org"
+
+          gem "fastlane"
+          gem "cocoapods"' > Gemfile
+
+      - name: Bundle Install
+        run: bundle install
+
+      - name: Install CocoaPods
+        run: bundle exec pod install
+
+      - name: Run Fastlane
+        run: bundle exec fastlane build
+

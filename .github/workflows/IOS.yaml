@@ -143,7 +143,10 @@ name: iOS Build
 on:
   push:
     branches:
-      - main
+      - Sprint2406
+  pull_request:
+    branches:
+      - Sprint2406
 
 jobs:
   build:

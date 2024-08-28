@@ -70,4 +70,4 @@ jobs:
         name: app-release.ipa
         path: ios/App/build/App.ipa
 
-        #End of build
+        #End of build.
